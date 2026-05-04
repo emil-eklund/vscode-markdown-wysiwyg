@@ -17,6 +17,8 @@ import { useState } from 'react';
 import { GhostSuggestionNode } from './nodes/GhostSuggestionNode';
 import { MarkdownSyncPlugin } from './plugins/MarkdownSyncPlugin';
 import { InlineSuggestionPlugin } from './plugins/InlineSuggestionPlugin';
+import { CommandBridgePlugin } from './plugins/CommandBridgePlugin';
+import { Toolbar } from './Toolbar';
 
 const theme = {
   paragraph: 'mwy-paragraph',
@@ -75,6 +77,7 @@ export function MarkdownEditor(): React.ReactElement {
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="mwy-shell">
+        <Toolbar />
         <RichTextPlugin
           contentEditable={
             <ContentEditable
@@ -94,6 +97,7 @@ export function MarkdownEditor(): React.ReactElement {
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <MarkdownSyncPlugin onConfig={setConfig} />
         <InlineSuggestionPlugin config={config} />
+        <CommandBridgePlugin />
       </div>
     </LexicalComposer>
   );

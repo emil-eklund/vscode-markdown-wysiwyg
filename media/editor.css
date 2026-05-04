@@ -26,6 +26,77 @@ body,
   flex-direction: column;
 }
 
+/* ---------- Toolbar ---------- */
+
+.mwy-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background));
+  border-bottom: 1px solid var(--vscode-editorWidget-border, var(--vscode-panel-border, transparent));
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  user-select: none;
+}
+
+.mwy-tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 6px;
+  margin: 0;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--vscode-foreground);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.mwy-tb-btn:hover:not(:disabled) {
+  background-color: var(--vscode-toolbar-hoverBackground, rgba(127, 127, 127, 0.15));
+}
+.mwy-tb-btn:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+.mwy-tb-btn.active {
+  background-color: var(--vscode-inputOption-activeBackground, rgba(100, 150, 220, 0.25));
+  color: var(--vscode-inputOption-activeForeground, var(--vscode-foreground));
+  border-color: var(--vscode-inputOption-activeBorder, transparent);
+}
+.mwy-tb-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.mwy-tb-select {
+  height: 26px;
+  padding: 0 4px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--vscode-dropdown-foreground, var(--vscode-foreground));
+  background-color: var(--vscode-dropdown-background, var(--vscode-editor-background));
+  border: 1px solid var(--vscode-dropdown-border, var(--vscode-editorWidget-border, transparent));
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mwy-tb-sep {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  margin: 0 6px;
+  background-color: var(--vscode-editorWidget-border, var(--vscode-panel-border, rgba(127, 127, 127, 0.3)));
+}
+
 .mwy-content {
   flex: 1 1 auto;
   outline: none;
@@ -45,7 +116,7 @@ body,
 
 .mwy-placeholder {
   position: absolute;
-  top: 24px;
+  top: 58px;
   left: max(24px, calc((100% - 820px) / 2));
   pointer-events: none;
   color: var(--vscode-editorHint-foreground, var(--vscode-descriptionForeground));

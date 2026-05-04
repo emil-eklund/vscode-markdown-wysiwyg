@@ -52,6 +52,29 @@ export function InlineSuggestionPlugin({ config }: Props): null {
       // Editor was constructed without our node; nothing to do.
       return;
     }
+    // Prevent selection from moving after ghost suggestion
+    const unregisterSelection = editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        const key = ghostKeyRef.current;
+        if (!key) return;
+        const sel = $getSelection();
+        if (!$isRangeSelection(sel)) return;
+        // Only care about collapsed selection
+        if (!sel.isCollapsed()) return;
+        const anchor = sel.anchor;
+        // If the anchor is after the ghost node, move it before
+        if (anchor.key === key && anchor.offset === 1) {
+          // Move selection to before the ghost
+          const ghost = $getNodeByKey(key);
+          const prev = ghost?.getPreviousSibling?.();
+          if (prev && typeof (prev as any).selectEnd === 'function') {
+            (prev as any).selectEnd();
+          } else if (ghost) {
+            ghost.selectPrevious();
+          }
+        }
+      });
+    });
 
     const vscode = getVsCodeApi();
 
@@ -81,14 +104,20 @@ export function InlineSuggestionPlugin({ config }: Props): null {
       const key = ghostKeyRef.current;
       if (key === null) return false;
       let accepted = false;
-      editor.update(() => {
-        const node = $getNodeByKey(key);
-        if (!node || !$isGhostSuggestionNode(node)) return;
-        const textNode = $createTextNode(node.getSuggestionText());
-        node.replace(textNode);
-        textNode.selectEnd();
-        accepted = true;
-      });
+      // `discrete: true` runs the update synchronously so we can return the
+      // correct boolean to Lexical's command dispatcher (otherwise the Tab key
+      // would still fall through to TabIndentationPlugin and insert a tab).
+      editor.update(
+        () => {
+          const node = $getNodeByKey(key);
+          if (!node || !$isGhostSuggestionNode(node)) return;
+          const textNode = $createTextNode(node.getSuggestionText());
+          node.replace(textNode);
+          textNode.selectEnd();
+          accepted = true;
+        },
+        { tag: SUGGESTION_TAG, discrete: true }
+      );
       ghostKeyRef.current = null;
       return accepted;
     }
@@ -229,7 +258,10 @@ export function InlineSuggestionPlugin({ config }: Props): null {
       (event) => {
         if (ghostKeyRef.current === null) return false;
         event?.preventDefault();
-        return acceptGhost();
+        acceptGhost();
+        // Always swallow the event when a ghost was present so the tab is not
+        // also inserted by Lexical's TabIndentationPlugin.
+        return true;
       },
       COMMAND_PRIORITY_HIGH
     );
@@ -251,6 +283,7 @@ export function InlineSuggestionPlugin({ config }: Props): null {
       unregisterUpdate();
       unregisterTab();
       unregisterEsc();
+      unregisterSelection();
     };
   }, [editor, config.enabled, config.debounceMs]);
 

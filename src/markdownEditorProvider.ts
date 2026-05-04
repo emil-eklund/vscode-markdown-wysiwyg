@@ -1,11 +1,24 @@
 import * as vscode from 'vscode';
-import type { ExtensionToWebview, SuggestionConfig, WebviewToExtension } from './protocol';
+import type { EditorCommand, ExtensionToWebview, SuggestionConfig, WebviewToExtension } from './protocol';
 import { SuggestionService } from './suggestionService';
 
 const CONFIG_SECTION = 'markdownWysiwyg';
 
 export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'markdownWysiwyg.editor';
+
+  private static activePanel: vscode.WebviewPanel | undefined;
+
+  /**
+   * Sends a command to the currently focused WYSIWYG editor webview, if any.
+   * Used by VS Code commands bound to keybindings (e.g. Ctrl+B).
+   */
+  public static sendCommand(command: EditorCommand): boolean {
+    const panel = MarkdownWysiwygEditorProvider.activePanel;
+    if (!panel) return false;
+    void panel.webview.postMessage({ type: 'command', command } satisfies ExtensionToWebview);
+    return true;
+  }
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new MarkdownWysiwygEditorProvider(context);
@@ -36,6 +49,17 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
     };
 
     webview.html = this.getHtml(webview);
+
+    if (webviewPanel.active) {
+      MarkdownWysiwygEditorProvider.activePanel = webviewPanel;
+    }
+    const viewStateSub = webviewPanel.onDidChangeViewState(() => {
+      if (webviewPanel.active) {
+        MarkdownWysiwygEditorProvider.activePanel = webviewPanel;
+      } else if (MarkdownWysiwygEditorProvider.activePanel === webviewPanel) {
+        MarkdownWysiwygEditorProvider.activePanel = undefined;
+      }
+    });
 
     let lastSyncedText = document.getText();
     let lastWebviewText = lastSyncedText;
@@ -153,7 +177,11 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
     });
 
     webviewPanel.onDidDispose(() => {
+      if (MarkdownWysiwygEditorProvider.activePanel === webviewPanel) {
+        MarkdownWysiwygEditorProvider.activePanel = undefined;
+      }
       cancelActiveSuggestion();
+      viewStateSub.dispose();
       changeDocSub.dispose();
       configSub.dispose();
       messageSub.dispose();

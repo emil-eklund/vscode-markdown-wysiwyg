@@ -62,18 +62,18 @@ export class SuggestionService {
   }
 
   private async pickModel(family: string): Promise<vscode.LanguageModelChat | undefined> {
-    try {
-      if (family) {
-        const matched = await vscode.lm.selectChatModels({ family });
-        if (matched.length > 0) {
-          return matched[0];
-        }
-      }
-      const any = await vscode.lm.selectChatModels({});
-      return any[0];
-    } catch {
-      return undefined;
+    
+    if (!family) {
+      family = 'gpt-4o';
     }
+
+    const matched = await vscode.lm.selectChatModels({ family });
+
+    if (matched.length > 0) {
+      return matched[0];
+    }
+
+    return undefined;
   }
 
   private sanitize(text: string): string {

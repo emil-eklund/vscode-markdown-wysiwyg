@@ -24,7 +24,43 @@
         "command": "markdownWysiwyg.openSourceEditor",
         "title": "Markdown: Open Source Editor",
         "category": "Markdown WYSIWYG"
-      }
+      },
+      { "command": "markdownWysiwyg.format.bold", "title": "Markdown WYSIWYG: Bold" },
+      { "command": "markdownWysiwyg.format.italic", "title": "Markdown WYSIWYG: Italic" },
+      { "command": "markdownWysiwyg.format.underline", "title": "Markdown WYSIWYG: Underline" },
+      { "command": "markdownWysiwyg.format.strikethrough", "title": "Markdown WYSIWYG: Strikethrough" },
+      { "command": "markdownWysiwyg.format.code", "title": "Markdown WYSIWYG: Inline Code" },
+      { "command": "markdownWysiwyg.format.undo", "title": "Markdown WYSIWYG: Undo" },
+      { "command": "markdownWysiwyg.format.redo", "title": "Markdown WYSIWYG: Redo" },
+      { "command": "markdownWysiwyg.format.paragraph", "title": "Markdown WYSIWYG: Paragraph" },
+      { "command": "markdownWysiwyg.format.h1", "title": "Markdown WYSIWYG: Heading 1" },
+      { "command": "markdownWysiwyg.format.h2", "title": "Markdown WYSIWYG: Heading 2" },
+      { "command": "markdownWysiwyg.format.h3", "title": "Markdown WYSIWYG: Heading 3" },
+      { "command": "markdownWysiwyg.format.h4", "title": "Markdown WYSIWYG: Heading 4" },
+      { "command": "markdownWysiwyg.format.h5", "title": "Markdown WYSIWYG: Heading 5" },
+      { "command": "markdownWysiwyg.format.h6", "title": "Markdown WYSIWYG: Heading 6" },
+      { "command": "markdownWysiwyg.format.quote", "title": "Markdown WYSIWYG: Block Quote" },
+      { "command": "markdownWysiwyg.format.unorderedList", "title": "Markdown WYSIWYG: Bullet List" },
+      { "command": "markdownWysiwyg.format.orderedList", "title": "Markdown WYSIWYG: Numbered List" },
+      { "command": "markdownWysiwyg.format.link", "title": "Markdown WYSIWYG: Insert/Edit Link" }
+    ],
+    "keybindings": [
+      { "command": "markdownWysiwyg.format.bold", "key": "ctrl+b", "mac": "cmd+b", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.italic", "key": "ctrl+i", "mac": "cmd+i", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.underline", "key": "ctrl+u", "mac": "cmd+u", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.strikethrough", "key": "ctrl+shift+x", "mac": "cmd+shift+x", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.code", "key": "ctrl+e", "mac": "cmd+e", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.link", "key": "ctrl+k", "mac": "cmd+k", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.h1", "key": "ctrl+alt+1", "mac": "cmd+alt+1", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.h2", "key": "ctrl+alt+2", "mac": "cmd+alt+2", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.h3", "key": "ctrl+alt+3", "mac": "cmd+alt+3", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.h4", "key": "ctrl+alt+4", "mac": "cmd+alt+4", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.h5", "key": "ctrl+alt+5", "mac": "cmd+alt+5", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.h6", "key": "ctrl+alt+6", "mac": "cmd+alt+6", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.paragraph", "key": "ctrl+alt+0", "mac": "cmd+alt+0", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.quote", "key": "ctrl+shift+.", "mac": "cmd+shift+.", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.unorderedList", "key": "ctrl+shift+8", "mac": "cmd+shift+8", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.format.orderedList", "key": "ctrl+shift+7", "mac": "cmd+shift+7", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" }
     ],
     "menus": {
       "editor/title": [
@@ -49,7 +85,25 @@
         {
           "command": "markdownWysiwyg.openSourceEditor",
           "when": "resourceLangId == markdown"
-        }
+        },
+        { "command": "markdownWysiwyg.format.bold", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.italic", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.underline", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.strikethrough", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.code", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.undo", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.redo", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.paragraph", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.h1", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.h2", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.h3", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.h4", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.h5", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.h6", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.quote", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.unorderedList", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.orderedList", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.format.link", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" }
       ]
     },
     "customEditors": [
@@ -80,8 +134,8 @@
         },
         "markdownWysiwyg.inlineSuggestions.model": {
           "type": "string",
-          "default": "",
-          "description": "Optional language model family to prefer (e.g. \"gpt-4o\", \"claude-3.5-sonnet\"). Empty = use the first available chat model."
+          "default": "gpt-4o",
+          "description": "Optional language model family to prefer (e.g. \"gpt-4o\", \"claude-3.5-sonnet\"). Empty = gpt-4o."
         },
         "markdownWysiwyg.inlineSuggestions.maxTokens": {
           "type": "number",
