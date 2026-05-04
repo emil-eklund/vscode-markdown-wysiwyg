@@ -1,179 +1,180 @@
 /* Layout: fill the webview viewport. */
 html,
-body {
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, var(--vscode-font-family));
+  font-size: var(--vscode-editor-font-size, var(--vscode-font-size));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.mwy-shell {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.mwy-content {
+  flex: 1 1 auto;
+  outline: none;
+  padding: 24px max(24px, calc((100% - 820px) / 2));
+  caret-color: var(--vscode-editorCursor-foreground, var(--vscode-foreground));
+  line-height: 1.6;
+  /* Use the user's chosen UI/text font for prose; not the editor mono font. */
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
-#editor {
+.mwy-content:focus {
+  outline: none;
+}
+
+.mwy-placeholder {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 24px;
+  left: max(24px, calc((100% - 820px) / 2));
+  pointer-events: none;
+  color: var(--vscode-editorHint-foreground, var(--vscode-descriptionForeground));
+  user-select: none;
 }
 
-/* --------- Toast UI Editor theming overrides ---------
- * Map Toast UI's surfaces to VS Code theme tokens so the editor blends in
- * with the user's chosen color theme (light, dark, or high contrast).
- */
+/* ---------- Block typography ---------- */
 
-.toastui-editor-defaultUI,
-.toastui-editor-defaultUI .toastui-editor-main,
-.toastui-editor-defaultUI .toastui-editor-md-container,
-.toastui-editor-defaultUI .toastui-editor-ww-container,
-.toastui-editor-contents {
-  background-color: var(--vscode-editor-background) !important;
-  color: var(--vscode-editor-foreground) !important;
+.mwy-paragraph {
+  margin: 0 0 0.75em 0;
 }
 
-.toastui-editor-defaultUI {
-  border: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+.mwy-h1,
+.mwy-h2,
+.mwy-h3,
+.mwy-h4,
+.mwy-h5,
+.mwy-h6 {
+  margin: 1em 0 0.4em;
+  font-weight: 600;
+  color: var(--vscode-editor-foreground);
+  line-height: 1.25;
+}
+.mwy-h1 { font-size: 1.8em; border-bottom: 1px solid var(--vscode-editorWidget-border, transparent); padding-bottom: 0.2em; }
+.mwy-h2 { font-size: 1.5em; border-bottom: 1px solid var(--vscode-editorWidget-border, transparent); padding-bottom: 0.15em; }
+.mwy-h3 { font-size: 1.25em; }
+.mwy-h4 { font-size: 1.1em; }
+.mwy-h5 { font-size: 1em; }
+.mwy-h6 { font-size: 0.9em; color: var(--vscode-descriptionForeground); }
+
+.mwy-quote {
+  margin: 0 0 0.75em 0;
+  padding: 0.25em 0.75em;
+  border-left: 4px solid var(--vscode-textBlockQuote-border, var(--vscode-focusBorder));
+  background-color: var(--vscode-textBlockQuote-background, transparent);
+  color: var(--vscode-editor-foreground);
 }
 
-/* Toolbar */
-.toastui-editor-toolbar,
-.toastui-editor-defaultUI-toolbar {
-  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background)) !important;
-  border-bottom: 1px solid var(--vscode-editorWidget-border, transparent) !important;
-  color: var(--vscode-foreground) !important;
+.mwy-list-ol,
+.mwy-list-ul {
+  margin: 0 0 0.75em 0;
+  padding-left: 1.5em;
+}
+.mwy-listitem {
+  margin: 0.15em 0;
+}
+.mwy-nested-listitem {
+  list-style: none;
 }
 
-.toastui-editor-toolbar-icons {
-  border: 1px solid transparent !important;
-  background-color: transparent !important;
-  color: var(--vscode-icon-foreground, var(--vscode-foreground)) !important;
-  filter: var(--vscode-icon-filter, none);
+.mwy-link {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: underline;
+  cursor: text;
+}
+.mwy-link:hover {
+  color: var(--vscode-textLink-activeForeground);
 }
 
-.toastui-editor-toolbar-icons:not(:disabled):hover {
-  background-color: var(--vscode-toolbar-hoverBackground) !important;
-  border-color: var(--vscode-toolbar-hoverBackground) !important;
-}
+/* ---------- Inline marks ---------- */
 
-.toastui-editor-toolbar-icons.active,
-.toastui-editor-toolbar-icons:active {
-  background-color: var(--vscode-toolbar-activeBackground, var(--vscode-toolbar-hoverBackground)) !important;
-}
-
-.toastui-editor-toolbar-divider {
-  background-color: var(--vscode-editorWidget-border, var(--vscode-panel-border)) !important;
-}
-
-/* Mode switch (Markdown / WYSIWYG) */
-.toastui-editor-mode-switch {
-  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background)) !important;
-  border-top: 1px solid var(--vscode-editorWidget-border, transparent) !important;
-}
-
-.toastui-editor-mode-switch .tab-item {
-  background-color: transparent !important;
-  color: var(--vscode-foreground) !important;
-  border: 1px solid var(--vscode-editorWidget-border, transparent) !important;
-}
-
-.toastui-editor-mode-switch .tab-item.active {
-  background-color: var(--vscode-tab-activeBackground, var(--vscode-editor-background)) !important;
-  color: var(--vscode-tab-activeForeground, var(--vscode-foreground)) !important;
-  border-color: var(--vscode-focusBorder, transparent) !important;
-}
-
-/* Content typography */
-.toastui-editor-contents h1,
-.toastui-editor-contents h2,
-.toastui-editor-contents h3,
-.toastui-editor-contents h4,
-.toastui-editor-contents h5,
-.toastui-editor-contents h6 {
-  color: var(--vscode-editor-foreground) !important;
-  border-color: var(--vscode-editorWidget-border, transparent) !important;
-}
-
-.toastui-editor-contents a {
-  color: var(--vscode-textLink-foreground) !important;
-}
-.toastui-editor-contents a:hover {
-  color: var(--vscode-textLink-activeForeground) !important;
-}
-
-.toastui-editor-contents code {
-  background-color: var(--vscode-textCodeBlock-background, var(--vscode-editorWidget-background)) !important;
-  color: var(--vscode-textPreformat-foreground, var(--vscode-editor-foreground)) !important;
+.mwy-bold { font-weight: 700; }
+.mwy-italic { font-style: italic; }
+.mwy-underline { text-decoration: underline; }
+.mwy-strikethrough { text-decoration: line-through; }
+.mwy-inline-code {
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 0.95em;
+  background-color: var(--vscode-textCodeBlock-background, var(--vscode-editorWidget-background));
+  color: var(--vscode-textPreformat-foreground, var(--vscode-editor-foreground));
   border-radius: 3px;
-  padding: 0 4px;
+  padding: 0.1em 0.35em;
 }
 
-.toastui-editor-contents pre {
-  background-color: var(--vscode-textCodeBlock-background, var(--vscode-editorWidget-background)) !important;
-  color: var(--vscode-editor-foreground) !important;
-  border: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+/* ---------- Code block ---------- */
+
+.mwy-code-block {
+  display: block;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: var(--vscode-editor-font-size, 0.95em);
+  background-color: var(--vscode-textCodeBlock-background, var(--vscode-editorWidget-background));
+  color: var(--vscode-editor-foreground);
+  border: 1px solid var(--vscode-editorWidget-border, transparent);
+  border-radius: 4px;
+  padding: 0.75em 1em;
+  margin: 0 0 0.75em 0;
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 2;
 }
 
-.toastui-editor-contents blockquote {
-  border-left: 4px solid var(--vscode-textBlockQuote-border, var(--vscode-focusBorder)) !important;
-  background-color: var(--vscode-textBlockQuote-background, transparent) !important;
-  color: var(--vscode-editor-foreground) !important;
+/* ---------- Selection ---------- */
+
+.mwy-content ::selection {
+  background-color: var(--vscode-editor-selectionBackground);
+  color: var(--vscode-editor-selectionForeground, inherit);
 }
 
-.toastui-editor-contents table th,
-.toastui-editor-contents table td {
-  border-color: var(--vscode-editorWidget-border, var(--vscode-panel-border)) !important;
+/* ---------- Ghost text (inline AI suggestion) ---------- */
+
+.ghost-suggestion {
+  /* The wrapper element rendered by GhostSuggestionNode.createDOM. */
+  display: inline;
 }
-.toastui-editor-contents table th {
-  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background)) !important;
-  color: var(--vscode-editor-foreground) !important;
+.ghost-suggestion-text {
+  color: var(--vscode-editorGhostText-foreground, var(--vscode-descriptionForeground));
+  opacity: 0.85;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+  white-space: pre;
 }
 
-.toastui-editor-contents hr {
-  border-color: var(--vscode-editorWidget-border, var(--vscode-panel-border)) !important;
-}
+/* ---------- Scrollbars ---------- */
 
-/* Popup menus / dropdowns */
-.toastui-editor-popup,
-.toastui-editor-dropdown-toolbar {
-  background-color: var(--vscode-menu-background, var(--vscode-editorWidget-background)) !important;
-  color: var(--vscode-menu-foreground, var(--vscode-foreground)) !important;
-  border: 1px solid var(--vscode-menu-border, var(--vscode-editorWidget-border)) !important;
-}
-
-.toastui-editor-popup input[type='text'],
-.toastui-editor-popup textarea {
-  background-color: var(--vscode-input-background) !important;
-  color: var(--vscode-input-foreground) !important;
-  border: 1px solid var(--vscode-input-border, transparent) !important;
-}
-
-.toastui-editor-popup .toastui-editor-ok-button,
-.toastui-editor-popup .toastui-editor-close-button {
-  background-color: var(--vscode-button-background) !important;
-  color: var(--vscode-button-foreground) !important;
-  border: 1px solid transparent !important;
-}
-.toastui-editor-popup .toastui-editor-ok-button:hover,
-.toastui-editor-popup .toastui-editor-close-button:hover {
-  background-color: var(--vscode-button-hoverBackground) !important;
-}
-
-/* Scrollbars */
-.toastui-editor-md-container ::-webkit-scrollbar,
-.toastui-editor-ww-container ::-webkit-scrollbar {
+.mwy-shell::-webkit-scrollbar,
+.mwy-code-block::-webkit-scrollbar {
   width: 14px;
   height: 14px;
 }
-.toastui-editor-md-container ::-webkit-scrollbar-thumb,
-.toastui-editor-ww-container ::-webkit-scrollbar-thumb {
+.mwy-shell::-webkit-scrollbar-thumb,
+.mwy-code-block::-webkit-scrollbar-thumb {
   background-color: var(--vscode-scrollbarSlider-background);
 }
-.toastui-editor-md-container ::-webkit-scrollbar-thumb:hover,
-.toastui-editor-ww-container ::-webkit-scrollbar-thumb:hover {
+.mwy-shell::-webkit-scrollbar-thumb:hover,
+.mwy-code-block::-webkit-scrollbar-thumb:hover {
   background-color: var(--vscode-scrollbarSlider-hoverBackground);
 }
-.toastui-editor-md-container ::-webkit-scrollbar-thumb:active,
-.toastui-editor-ww-container ::-webkit-scrollbar-thumb:active {
+.mwy-shell::-webkit-scrollbar-thumb:active,
+.mwy-code-block::-webkit-scrollbar-thumb:active {
   background-color: var(--vscode-scrollbarSlider-activeBackground);
 }

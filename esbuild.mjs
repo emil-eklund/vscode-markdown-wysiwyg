@@ -20,7 +20,7 @@ const extensionConfig = {
 
 /** @type {import('esbuild').BuildOptions} */
 const webviewConfig = {
-  entryPoints: ['media/editor.ts'],
+  entryPoints: ['media/editor.tsx'],
   bundle: true,
   outfile: 'dist/webview/editor.js',
   format: 'iife',
@@ -28,6 +28,10 @@ const webviewConfig = {
   target: 'es2020',
   sourcemap: !production,
   minify: production,
+  jsx: 'automatic',
+  define: {
+    'process.env.NODE_ENV': production ? '"production"' : '"development"'
+  },
   loader: {
     '.css': 'css',
     '.svg': 'dataurl',

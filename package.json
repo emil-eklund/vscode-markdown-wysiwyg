@@ -1,12 +1,12 @@
 {
   "name": "markdown-wysiwyg",
   "displayName": "Markdown WYSIWYG",
-  "description": "Edit Markdown files directly with a rich text editor inside VS Code.",
+  "description": "Edit Markdown files directly with a rich text editor inside VS Code, with inline AI suggestions.",
   "version": "0.1.0",
   "publisher": "local",
   "private": true,
   "engines": {
-    "vscode": "^1.84.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
@@ -57,16 +57,41 @@
         "viewType": "markdownWysiwyg.editor",
         "displayName": "Markdown WYSIWYG",
         "selector": [
-          {
-            "filenamePattern": "*.md"
-          },
-          {
-            "filenamePattern": "*.markdown"
-          }
+          { "filenamePattern": "*.md" },
+          { "filenamePattern": "*.markdown" }
         ],
         "priority": "option"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Markdown WYSIWYG",
+      "properties": {
+        "markdownWysiwyg.inlineSuggestions.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline AI completions while editing in the WYSIWYG editor (requires a VS Code language model provider, e.g. GitHub Copilot)."
+        },
+        "markdownWysiwyg.inlineSuggestions.debounceMs": {
+          "type": "number",
+          "default": 600,
+          "minimum": 100,
+          "maximum": 5000,
+          "description": "How long to wait after the last keystroke before requesting an inline suggestion."
+        },
+        "markdownWysiwyg.inlineSuggestions.model": {
+          "type": "string",
+          "default": "",
+          "description": "Optional language model family to prefer (e.g. \"gpt-4o\", \"claude-3.5-sonnet\"). Empty = use the first available chat model."
+        },
+        "markdownWysiwyg.inlineSuggestions.maxTokens": {
+          "type": "number",
+          "default": 80,
+          "minimum": 8,
+          "maximum": 1000,
+          "description": "Approximate maximum length of a single inline suggestion."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
@@ -77,11 +102,24 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "@types/vscode": "^1.84.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/vscode": "^1.90.0",
     "esbuild": "^0.21.5",
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@toast-ui/editor": "^3.2.2"
+    "@lexical/code": "^0.20.0",
+    "@lexical/history": "^0.20.0",
+    "@lexical/link": "^0.20.0",
+    "@lexical/list": "^0.20.0",
+    "@lexical/markdown": "^0.20.0",
+    "@lexical/react": "^0.20.0",
+    "@lexical/rich-text": "^0.20.0",
+    "@lexical/selection": "^0.20.0",
+    "@lexical/utils": "^0.20.0",
+    "lexical": "^0.20.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

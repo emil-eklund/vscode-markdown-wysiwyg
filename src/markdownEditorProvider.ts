@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
-import type { ExtensionToWebview, WebviewToExtension } from './protocol';
+import type { ExtensionToWebview, SuggestionConfig, WebviewToExtension } from './protocol';
+import { SuggestionService } from './suggestionService';
+
+const CONFIG_SECTION = 'markdownWysiwyg';
 
 export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'markdownWysiwyg.editor';
@@ -15,6 +18,8 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
       }
     );
   }
+
+  private readonly suggestions = new SuggestionService();
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -32,21 +37,21 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
 
     webview.html = this.getHtml(webview);
 
-    // Track the last text we sent the webview, so we can avoid round-trip
-    // updates when the document changes because of our own applyEdit.
     let lastSyncedText = document.getText();
-    // Track the latest text the webview has reported, so we can dedupe edits.
     let lastWebviewText = lastSyncedText;
     let isApplyingFromWebview = false;
+    let activeSuggestion: { id: number; cts: vscode.CancellationTokenSource } | undefined;
 
     const send = (msg: ExtensionToWebview) => {
       void webview.postMessage(msg);
     };
 
-    const post = (text: string) => {
-      lastSyncedText = text;
-      lastWebviewText = text;
-      send({ type: 'externalUpdate', text });
+    const cancelActiveSuggestion = () => {
+      if (activeSuggestion) {
+        activeSuggestion.cts.cancel();
+        activeSuggestion.cts.dispose();
+        activeSuggestion = undefined;
+      }
     };
 
     const changeDocSub = vscode.workspace.onDidChangeTextDocument((e) => {
@@ -54,7 +59,6 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
         return;
       }
       if (isApplyingFromWebview) {
-        // This change originated from the webview; just track it.
         lastSyncedText = e.document.getText();
         return;
       }
@@ -62,7 +66,15 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
       if (text === lastSyncedText) {
         return;
       }
-      post(text);
+      lastSyncedText = text;
+      lastWebviewText = text;
+      send({ type: 'externalUpdate', text });
+    });
+
+    const configSub = vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration(CONFIG_SECTION)) {
+        send({ type: 'configUpdate', suggestionConfig: this.getSuggestionConfig() });
+      }
     });
 
     const messageSub = webview.onDidReceiveMessage(async (msg: WebviewToExtension) => {
@@ -70,26 +82,96 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
         case 'ready':
           lastSyncedText = document.getText();
           lastWebviewText = lastSyncedText;
-          send({ type: 'init', text: lastSyncedText });
+          send({
+            type: 'init',
+            text: lastSyncedText,
+            suggestionConfig: this.getSuggestionConfig()
+          });
           break;
+
         case 'edit':
+          cancelActiveSuggestion();
           if (msg.text === lastWebviewText) {
             return;
           }
           lastWebviewText = msg.text;
-          await this.replaceDocumentContent(document, msg.text, () => {
-            isApplyingFromWebview = true;
-          }, () => {
-            isApplyingFromWebview = false;
-          });
+          await this.replaceDocumentContent(
+            document,
+            msg.text,
+            () => {
+              isApplyingFromWebview = true;
+            },
+            () => {
+              isApplyingFromWebview = false;
+            }
+          );
           break;
+
+        case 'cancelSuggestion':
+          if (activeSuggestion?.id === msg.id) {
+            cancelActiveSuggestion();
+          }
+          break;
+
+        case 'requestSuggestion': {
+          if (!this.isSuggestionsEnabled()) {
+            return;
+          }
+          cancelActiveSuggestion();
+          const cts = new vscode.CancellationTokenSource();
+          activeSuggestion = { id: msg.request.id, cts };
+          try {
+            const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+            const text = await this.suggestions.getSuggestion(
+              msg.request.prefix,
+              msg.request.suffix,
+              {
+                modelFamily: config.get<string>('inlineSuggestions.model', ''),
+                maxTokens: config.get<number>('inlineSuggestions.maxTokens', 80)
+              },
+              cts.token
+            );
+            if (cts.token.isCancellationRequested || activeSuggestion?.id !== msg.request.id) {
+              return;
+            }
+            send({ type: 'suggestion', id: msg.request.id, text });
+          } catch (err) {
+            if (cts.token.isCancellationRequested) {
+              return;
+            }
+            const message = err instanceof Error ? err.message : String(err);
+            send({ type: 'suggestionError', id: msg.request.id, message });
+          } finally {
+            if (activeSuggestion?.id === msg.request.id) {
+              activeSuggestion.cts.dispose();
+              activeSuggestion = undefined;
+            }
+          }
+          break;
+        }
       }
     });
 
     webviewPanel.onDidDispose(() => {
+      cancelActiveSuggestion();
       changeDocSub.dispose();
+      configSub.dispose();
       messageSub.dispose();
     });
+  }
+
+  private isSuggestionsEnabled(): boolean {
+    return vscode.workspace
+      .getConfiguration(CONFIG_SECTION)
+      .get<boolean>('inlineSuggestions.enabled', true);
+  }
+
+  private getSuggestionConfig(): SuggestionConfig {
+    const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+    return {
+      enabled: config.get<boolean>('inlineSuggestions.enabled', true),
+      debounceMs: config.get<number>('inlineSuggestions.debounceMs', 600)
+    };
   }
 
   private async replaceDocumentContent(
@@ -111,7 +193,6 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
     try {
       await vscode.workspace.applyEdit(edit);
     } finally {
-      // Defer clearing the flag until after the change event fires.
       setTimeout(onAfter, 0);
     }
   }
@@ -143,7 +224,7 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
   <title>Markdown WYSIWYG</title>
 </head>
 <body>
-  <div id="editor"></div>
+  <div id="root"></div>
   <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;
