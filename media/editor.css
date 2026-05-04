@@ -1,0 +1,179 @@
+/* Layout: fill the webview viewport. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+#editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* --------- Toast UI Editor theming overrides ---------
+ * Map Toast UI's surfaces to VS Code theme tokens so the editor blends in
+ * with the user's chosen color theme (light, dark, or high contrast).
+ */
+
+.toastui-editor-defaultUI,
+.toastui-editor-defaultUI .toastui-editor-main,
+.toastui-editor-defaultUI .toastui-editor-md-container,
+.toastui-editor-defaultUI .toastui-editor-ww-container,
+.toastui-editor-contents {
+  background-color: var(--vscode-editor-background) !important;
+  color: var(--vscode-editor-foreground) !important;
+}
+
+.toastui-editor-defaultUI {
+  border: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+}
+
+/* Toolbar */
+.toastui-editor-toolbar,
+.toastui-editor-defaultUI-toolbar {
+  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background)) !important;
+  border-bottom: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+  color: var(--vscode-foreground) !important;
+}
+
+.toastui-editor-toolbar-icons {
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  color: var(--vscode-icon-foreground, var(--vscode-foreground)) !important;
+  filter: var(--vscode-icon-filter, none);
+}
+
+.toastui-editor-toolbar-icons:not(:disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground) !important;
+  border-color: var(--vscode-toolbar-hoverBackground) !important;
+}
+
+.toastui-editor-toolbar-icons.active,
+.toastui-editor-toolbar-icons:active {
+  background-color: var(--vscode-toolbar-activeBackground, var(--vscode-toolbar-hoverBackground)) !important;
+}
+
+.toastui-editor-toolbar-divider {
+  background-color: var(--vscode-editorWidget-border, var(--vscode-panel-border)) !important;
+}
+
+/* Mode switch (Markdown / WYSIWYG) */
+.toastui-editor-mode-switch {
+  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background)) !important;
+  border-top: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+  background-color: transparent !important;
+  color: var(--vscode-foreground) !important;
+  border: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+}
+
+.toastui-editor-mode-switch .tab-item.active {
+  background-color: var(--vscode-tab-activeBackground, var(--vscode-editor-background)) !important;
+  color: var(--vscode-tab-activeForeground, var(--vscode-foreground)) !important;
+  border-color: var(--vscode-focusBorder, transparent) !important;
+}
+
+/* Content typography */
+.toastui-editor-contents h1,
+.toastui-editor-contents h2,
+.toastui-editor-contents h3,
+.toastui-editor-contents h4,
+.toastui-editor-contents h5,
+.toastui-editor-contents h6 {
+  color: var(--vscode-editor-foreground) !important;
+  border-color: var(--vscode-editorWidget-border, transparent) !important;
+}
+
+.toastui-editor-contents a {
+  color: var(--vscode-textLink-foreground) !important;
+}
+.toastui-editor-contents a:hover {
+  color: var(--vscode-textLink-activeForeground) !important;
+}
+
+.toastui-editor-contents code {
+  background-color: var(--vscode-textCodeBlock-background, var(--vscode-editorWidget-background)) !important;
+  color: var(--vscode-textPreformat-foreground, var(--vscode-editor-foreground)) !important;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.toastui-editor-contents pre {
+  background-color: var(--vscode-textCodeBlock-background, var(--vscode-editorWidget-background)) !important;
+  color: var(--vscode-editor-foreground) !important;
+  border: 1px solid var(--vscode-editorWidget-border, transparent) !important;
+}
+
+.toastui-editor-contents blockquote {
+  border-left: 4px solid var(--vscode-textBlockQuote-border, var(--vscode-focusBorder)) !important;
+  background-color: var(--vscode-textBlockQuote-background, transparent) !important;
+  color: var(--vscode-editor-foreground) !important;
+}
+
+.toastui-editor-contents table th,
+.toastui-editor-contents table td {
+  border-color: var(--vscode-editorWidget-border, var(--vscode-panel-border)) !important;
+}
+.toastui-editor-contents table th {
+  background-color: var(--vscode-editorWidget-background, var(--vscode-editor-background)) !important;
+  color: var(--vscode-editor-foreground) !important;
+}
+
+.toastui-editor-contents hr {
+  border-color: var(--vscode-editorWidget-border, var(--vscode-panel-border)) !important;
+}
+
+/* Popup menus / dropdowns */
+.toastui-editor-popup,
+.toastui-editor-dropdown-toolbar {
+  background-color: var(--vscode-menu-background, var(--vscode-editorWidget-background)) !important;
+  color: var(--vscode-menu-foreground, var(--vscode-foreground)) !important;
+  border: 1px solid var(--vscode-menu-border, var(--vscode-editorWidget-border)) !important;
+}
+
+.toastui-editor-popup input[type='text'],
+.toastui-editor-popup textarea {
+  background-color: var(--vscode-input-background) !important;
+  color: var(--vscode-input-foreground) !important;
+  border: 1px solid var(--vscode-input-border, transparent) !important;
+}
+
+.toastui-editor-popup .toastui-editor-ok-button,
+.toastui-editor-popup .toastui-editor-close-button {
+  background-color: var(--vscode-button-background) !important;
+  color: var(--vscode-button-foreground) !important;
+  border: 1px solid transparent !important;
+}
+.toastui-editor-popup .toastui-editor-ok-button:hover,
+.toastui-editor-popup .toastui-editor-close-button:hover {
+  background-color: var(--vscode-button-hoverBackground) !important;
+}
+
+/* Scrollbars */
+.toastui-editor-md-container ::-webkit-scrollbar,
+.toastui-editor-ww-container ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+.toastui-editor-md-container ::-webkit-scrollbar-thumb,
+.toastui-editor-ww-container ::-webkit-scrollbar-thumb {
+  background-color: var(--vscode-scrollbarSlider-background);
+}
+.toastui-editor-md-container ::-webkit-scrollbar-thumb:hover,
+.toastui-editor-ww-container ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--vscode-scrollbarSlider-hoverBackground);
+}
+.toastui-editor-md-container ::-webkit-scrollbar-thumb:active,
+.toastui-editor-ww-container ::-webkit-scrollbar-thumb:active {
+  background-color: var(--vscode-scrollbarSlider-activeBackground);
+}

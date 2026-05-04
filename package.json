@@ -1,0 +1,87 @@
+{
+  "name": "markdown-wysiwyg",
+  "displayName": "Markdown WYSIWYG",
+  "description": "Edit Markdown files directly with a rich text editor inside VS Code.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "markdownWysiwyg.openEditor",
+        "title": "Markdown: Open in WYSIWYG Editor",
+        "category": "Markdown WYSIWYG"
+      },
+      {
+        "command": "markdownWysiwyg.openSourceEditor",
+        "title": "Markdown: Open Source Editor",
+        "category": "Markdown WYSIWYG"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "markdownWysiwyg.openEditor",
+          "when": "resourceLangId == markdown && activeWebviewPanelId != markdownWysiwyg.editor",
+          "group": "navigation@99"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "markdownWysiwyg.openEditor",
+          "when": "resourceLangId == markdown",
+          "group": "navigation@99"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "markdownWysiwyg.openEditor",
+          "when": "resourceLangId == markdown"
+        },
+        {
+          "command": "markdownWysiwyg.openSourceEditor",
+          "when": "resourceLangId == markdown"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "markdownWysiwyg.editor",
+        "displayName": "Markdown WYSIWYG",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.markdown"
+          }
+        ],
+        "priority": "option"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.mjs --production",
+    "watch": "node esbuild.mjs --watch",
+    "compile": "tsc -p ./ --noEmit",
+    "lint": "tsc -p ./ --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.84.0",
+    "esbuild": "^0.21.5",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@toast-ui/editor": "^3.2.2"
+  }
+}
