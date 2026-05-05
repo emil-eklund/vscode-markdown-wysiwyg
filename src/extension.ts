@@ -34,6 +34,15 @@ export function activate(context: vscode.ExtensionContext): void {
     );
   }
 
+  // No-op command bound to Ctrl+B/I/U inside the WYSIWYG editor. Its only job
+  // is to take precedence over VS Code's default bindings (e.g. toggle sidebar
+  // on Ctrl+B) so those don't fire while the editor is focused. The keydown
+  // still reaches the webview, where Lexical's RichTextPlugin handles the
+  // actual formatting natively — sending a command here would double-toggle.
+  context.subscriptions.push(
+    vscode.commands.registerCommand('markdownWysiwyg.noop', () => {})
+  );
+
   context.subscriptions.push(
     vscode.commands.registerCommand('markdownWysiwyg.openEditor', async (uri?: vscode.Uri) => {
       const target = uri ?? vscode.window.activeTextEditor?.document.uri;

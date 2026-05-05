@@ -2,7 +2,7 @@
   "name": "markdown-wysiwyg",
   "displayName": "Markdown WYSIWYG",
   "description": "Edit Markdown files directly with a rich text editor inside VS Code, with inline AI suggestions.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "local",
   "private": true,
   "engines": {
@@ -42,12 +42,13 @@
       { "command": "markdownWysiwyg.format.quote", "title": "Markdown WYSIWYG: Block Quote" },
       { "command": "markdownWysiwyg.format.unorderedList", "title": "Markdown WYSIWYG: Bullet List" },
       { "command": "markdownWysiwyg.format.orderedList", "title": "Markdown WYSIWYG: Numbered List" },
-      { "command": "markdownWysiwyg.format.link", "title": "Markdown WYSIWYG: Insert/Edit Link" }
+      { "command": "markdownWysiwyg.format.link", "title": "Markdown WYSIWYG: Insert/Edit Link" },
+      { "command": "markdownWysiwyg.noop", "title": "Markdown WYSIWYG: (internal no-op)" }
     ],
     "keybindings": [
-      { "command": "markdownWysiwyg.format.bold", "key": "ctrl+b", "mac": "cmd+b", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
-      { "command": "markdownWysiwyg.format.italic", "key": "ctrl+i", "mac": "cmd+i", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
-      { "command": "markdownWysiwyg.format.underline", "key": "ctrl+u", "mac": "cmd+u", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.noop", "key": "ctrl+b", "mac": "cmd+b", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.noop", "key": "ctrl+i", "mac": "cmd+i", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+      { "command": "markdownWysiwyg.noop", "key": "ctrl+u", "mac": "cmd+u", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
       { "command": "markdownWysiwyg.format.strikethrough", "key": "ctrl+shift+x", "mac": "cmd+shift+x", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
       { "command": "markdownWysiwyg.format.code", "key": "ctrl+e", "mac": "cmd+e", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
       { "command": "markdownWysiwyg.format.link", "key": "ctrl+k", "mac": "cmd+k", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
@@ -103,7 +104,8 @@
         { "command": "markdownWysiwyg.format.quote", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
         { "command": "markdownWysiwyg.format.unorderedList", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
         { "command": "markdownWysiwyg.format.orderedList", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
-        { "command": "markdownWysiwyg.format.link", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" }
+        { "command": "markdownWysiwyg.format.link", "when": "activeWebviewPanelId == 'markdownWysiwyg.editor'" },
+        { "command": "markdownWysiwyg.noop", "when": "false" }
       ]
     },
     "customEditors": [

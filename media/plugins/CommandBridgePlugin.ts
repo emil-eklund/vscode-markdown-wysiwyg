@@ -41,29 +41,7 @@ export function CommandBridgePlugin(): null {
     }
 
     function format(f: TextFormatType) {
-      // Save selection before formatting
-      let anchor: any = null;
-      let focus: any = null;
-      editor.getEditorState().read(() => {
-        const sel = $getSelection();
-        if (sel && typeof sel === 'object' && 'anchor' in sel && 'focus' in sel) {
-          anchor = sel.anchor;
-          focus = sel.focus;
-        }
-      });
       editor.dispatchCommand(FORMAT_TEXT_COMMAND, f);
-      // Restore selection after a short delay to allow format to apply
-      setTimeout(() => {
-        if (anchor && focus) {
-          editor.update(() => {
-            const sel = $getSelection();
-            if (sel && typeof sel === 'object' && 'anchor' in sel && 'focus' in sel) {
-              (sel.anchor as any).set(anchor.key, anchor.offset, anchor.type);
-              (sel.focus as any).set(focus.key, focus.offset, focus.type);
-            }
-          });
-        }
-      }, 0);
     }
 
     function setBlock(create: () => ElementNode) {
