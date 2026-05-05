@@ -2,6 +2,7 @@
 .vscode-test/**
 src/**
 media/**
+!media/icon.png
 node_modules/**
 .gitignore
 .eslintrc*
