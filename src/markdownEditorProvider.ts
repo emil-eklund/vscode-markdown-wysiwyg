@@ -63,7 +63,10 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
 
     let lastSyncedText = document.getText();
     let lastWebviewText = lastSyncedText;
-    let isApplyingFromWebview = false;
+    // Counter (not boolean) so that overlapping `edit` handlers — which can
+    // happen while the user is typing fast — don't have one finishing flip
+    // the flag off while the other is still mid-apply.
+    let pendingWebviewApplies = 0;
     let activeSuggestion: { id: number; cts: vscode.CancellationTokenSource } | undefined;
 
     const send = (msg: ExtensionToWebview) => {
@@ -82,12 +85,23 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
       if (e.document.uri.toString() !== document.uri.toString()) {
         return;
       }
-      if (isApplyingFromWebview) {
-        lastSyncedText = e.document.getText();
+      const text = e.document.getText();
+      // Any change that fires while one of our own applies is in flight is by
+      // definition our own echo — never push it back to the webview.
+      if (pendingWebviewApplies > 0) {
+        lastSyncedText = text;
         return;
       }
-      const text = e.document.getText();
       if (text === lastSyncedText) {
+        return;
+      }
+      // Backup self-echo guard: the webview emits LF, but `applyEdit` may
+      // re-encode to CRLF based on the document's EOL setting. If the only
+      // difference between the new doc text and what we last received from
+      // the webview is line endings, treat it as our own apply round-tripping
+      // (e.g. a deferred change event landing after the counter dropped).
+      if (normalizeEol(text) === normalizeEol(lastWebviewText)) {
+        lastSyncedText = text;
         return;
       }
       lastSyncedText = text;
@@ -119,16 +133,12 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
             return;
           }
           lastWebviewText = msg.text;
-          await this.replaceDocumentContent(
-            document,
-            msg.text,
-            () => {
-              isApplyingFromWebview = true;
-            },
-            () => {
-              isApplyingFromWebview = false;
-            }
-          );
+          pendingWebviewApplies++;
+          try {
+            await this.replaceDocumentContent(document, msg.text);
+          } finally {
+            pendingWebviewApplies--;
+          }
           break;
 
         case 'cancelSuggestion':
@@ -204,9 +214,7 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
 
   private async replaceDocumentContent(
     document: vscode.TextDocument,
-    newText: string,
-    onBefore: () => void,
-    onAfter: () => void
+    newText: string
   ): Promise<void> {
     if (document.getText() === newText) {
       return;
@@ -217,12 +225,7 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
       document.positionAt(document.getText().length)
     );
     edit.replace(document.uri, fullRange, newText);
-    onBefore();
-    try {
-      await vscode.workspace.applyEdit(edit);
-    } finally {
-      setTimeout(onAfter, 0);
-    }
+    await vscode.workspace.applyEdit(edit);
   }
 
   private getHtml(webview: vscode.Webview): string {
@@ -257,6 +260,10 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomTextEditorPro
 </body>
 </html>`;
   }
+}
+
+function normalizeEol(text: string): string {
+  return text.replace(/\r\n/g, '\n');
 }
 
 function getNonce(): string {

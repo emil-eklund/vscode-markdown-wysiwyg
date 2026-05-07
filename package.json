@@ -2,7 +2,7 @@
   "name": "markdown-wysiwyg",
   "displayName": "Markdown WYSIWYG",
   "description": "Edit Markdown files directly with a rich text editor inside VS Code, with inline AI suggestions.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "publisher": "local",
   "repository": {

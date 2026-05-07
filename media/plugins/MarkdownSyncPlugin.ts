@@ -48,15 +48,18 @@ export function MarkdownSyncPlugin({ onConfig }: Props): null {
     }
 
     function applyExternalText(text: string) {
-      if (text === lastSerializedRef.current && initializedRef.current) {
+      // Lexical always serializes with LF; the host doc may use CRLF. Compare
+      // and parse on a normalized version so EOL alone never forces a rebuild.
+      const normalized = text.replace(/\r\n/g, '\n');
+      if (normalized === lastSerializedRef.current && initializedRef.current) {
         return;
       }
       editor.update(
         () => {
           // $convertFromMarkdownString replaces the root's contents, which
           // also drops any inline ghost-suggestion nodes.
-          $convertFromMarkdownString(text, TRANSFORMERS);
-          lastSerializedRef.current = text;
+          $convertFromMarkdownString(normalized, TRANSFORMERS);
+          lastSerializedRef.current = normalized;
         },
         { tag: EXTERNAL_TAG, discrete: true }
       );
